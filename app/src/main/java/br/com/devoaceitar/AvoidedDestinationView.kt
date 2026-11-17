@@ -11,13 +11,13 @@ internal fun Context.avoidedDestinationView(neighborhood: String): TextView {
     val horizontal = (8 * density + 0.5f).toInt()
     val vertical = (4 * density + 0.5f).toInt()
     return TextView(this).apply {
-        text = "Bairro a evitar · $neighborhood"
-        textSize = 15f
+        text = "Evitar · $neighborhood"
+        textSize = 14f
         setTypeface(typeface, Typeface.BOLD)
         setTextColor(Color.rgb(255, 239, 237))
         setPadding(horizontal, vertical, horizontal, vertical)
         background = GradientDrawable().apply {
-            setColor(Color.rgb(132, 31, 28))
+            setColor(Color.rgb(87, 13, 25))
             cornerRadius = 6 * density
         }
     }

@@ -1,6 +1,7 @@
 """Measure offer-to-overlay display latency in the synthetic Android laboratory."""
 
 import argparse
+from itertools import groupby
 import json
 import math
 from pathlib import Path
@@ -12,10 +13,12 @@ import uuid
 
 LAB = "br.com.devoaceitar.lab/.LabActivity"
 SERVICE = "br.com.devoaceitar/br.com.devoaceitar.LabOfferService"
-SCENARIOS = ("good", "zone", "wait", "missing", "rating") * 2
+SCENARIOS = ("delivery", "batch", "split", "good", "zone", "wait", "missing", "rating") * 2
 WIDTH, HEIGHT = 108, 240
-OFFER_COLOR = (39, 61, 94)
-OVERLAY_COLOR = (22, 68, 55)
+LEGACY_OFFER_COLOR = (39, 61, 94)
+OFFER_SURFACE = (255, 255, 255)
+ACCEPT_COLORS = ((0, 108, 57), (46, 137, 99))
+OVERLAY_COLORS = ((8, 76, 48), (255, 212, 118), (139, 30, 43), (22, 68, 55))
 
 
 def adb(device, *args):
@@ -30,7 +33,7 @@ def capture(device, destination):
     adb(device, "shell", "am", "start", "-W", "-n", LAB)
     remote = f"/sdcard/devoaceitar-lab-{uuid.uuid4().hex}.mp4"
     recorder = subprocess.Popen(
-        ["adb", "-s", device, "shell", "screenrecord", "--time-limit", "32", remote],
+        ["adb", "-s", device, "shell", "screenrecord", "--time-limit", "40", remote],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     try:
@@ -51,17 +54,33 @@ def capture(device, destination):
         adb(device, "shell", "rm", "-f", remote)
 
 
-def band(frame, color):
+def band(frame, colors, *, start=HEIGHT // 3, tolerance=16, minimum=5,
+         columns=(17, 21, 87, 91), contiguous=False):
     rows = []
-    for y in range(HEIGHT // 2, HEIGHT):
+    for y in range(start, HEIGHT):
         count = 0
-        for x in (17, 21, 87, 91):
+        for x in columns:
             offset = 3 * (y * WIDTH + x)
-            if all(abs(frame[offset + index] - value) <= 16 for index, value in enumerate(color)):
+            if any(all(abs(frame[offset + index] - value) <= tolerance
+                       for index, value in enumerate(color)) for color in colors):
                 count += 1
         if count >= 2:
             rows.append(y)
-    return (min(rows), max(rows)) if len(rows) >= 5 else None
+    if contiguous:
+        runs = ([row for _, row in run]
+                for _, run in groupby(enumerate(rows), lambda entry: entry[1] - entry[0]))
+        rows = max(runs, key=len, default=[])
+    return (rows[0], rows[-1]) if len(rows) >= minimum else None
+
+
+def offer_band(frame):
+    # The white card is identified only when its full-width green button is visible.
+    if band(frame, ACCEPT_COLORS, start=HEIGHT * 3 // 4, tolerance=12):
+        card = band(frame, (OFFER_SURFACE,), tolerance=8, minimum=23,
+                    columns=(7, 8, WIDTH - 9, WIDTH - 8), contiguous=True)
+        if card:
+            return card
+    return band(frame, (LEGACY_OFFER_COLOR,), start=HEIGHT // 2)
 
 
 def analyze(video):
@@ -80,18 +99,20 @@ def analyze(video):
 
     offers = []
     previous_offer = False
-    previous_overlay = False
+    overlay_belongs_to_offer = False
     for index, frame in enumerate(frames):
         parts = pixels[index * stride:(index + 1) * stride]
-        offer = band(parts, OFFER_COLOR)
-        overlay = band(parts, OVERLAY_COLOR)
+        offer = offer_band(parts)
+        overlay = band(parts, OVERLAY_COLORS)
         timestamp = float(frame["best_effort_timestamp_time"])
+        if not overlay:
+            overlay_belongs_to_offer = False
         if offer and not previous_offer:
-            offers.append({"offer_s": timestamp, "overlay_s": None, "carried_over": previous_overlay})
+            offers.append({"offer_s": timestamp, "overlay_s": None, "carried_over": overlay_belongs_to_offer})
         if offer and overlay and overlay[1] < offer[0] and offers[-1]["overlay_s"] is None:
             offers[-1]["overlay_s"] = timestamp
+            overlay_belongs_to_offer = True
         previous_offer = offer is not None
-        previous_overlay = overlay is not None
 
     times = [
         round((entry["overlay_s"] - entry["offer_s"]) * 1000, 1)
@@ -123,7 +144,8 @@ def main():
         result["attempted"] = len(SCENARIOS)
     (args.output / (video.stem + ".json")).write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2))
-    return 0 if result["offered"] == result["matched"] == len(SCENARIOS) else 1
+    expected = len(SCENARIOS) if args.device else result["offered"]
+    return 0 if expected > 0 and result["offered"] == result["matched"] == expected else 1
 
 
 if __name__ == "__main__":

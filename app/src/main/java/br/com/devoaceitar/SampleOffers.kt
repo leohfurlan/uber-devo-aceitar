@@ -13,4 +13,6 @@ val sampleOffers = listOf(
         TripMeasure(total = 1180), null)),
     Scenario("Nota abaixo da meta", Offer("Corrida", 2800, TripMeasure(total = 8500),
         TripMeasure(total = 1320), "Bairro Central", rating = 4.51)),
+    Scenario("Entrega · dois trechos", Offer("Entrega", 1201, TripMeasure(pickup = 4800, trip = 7600),
+        TripMeasure(pickup = 720, trip = 1260), "Bairro Central", rating = 4.95)),
 )

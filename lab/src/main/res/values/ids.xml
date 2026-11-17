@@ -6,6 +6,10 @@
     <item type="id" name="offer_amount" />
     <item type="id" name="offer_distance" />
     <item type="id" name="offer_duration" />
+    <item type="id" name="offer_pickup_distance" />
+    <item type="id" name="offer_trip_distance" />
+    <item type="id" name="offer_pickup_duration" />
+    <item type="id" name="offer_trip_duration" />
     <item type="id" name="offer_destination" />
     <item type="id" name="offer_rating" />
     <item type="id" name="offer_wait" />

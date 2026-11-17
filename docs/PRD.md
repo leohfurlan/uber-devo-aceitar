@@ -12,10 +12,10 @@ O DRIVH e o Mystro servem de referência para o cálculo por oferta e a configur
 
 ## Experiência proposta
 
-O motorista configura o custo por quilômetro, seus mínimos de rendimento e as regiões que prefere evitar. Quando o Uber Driver exibe uma oferta no Android, um **cartão flutuante aparece automaticamente logo acima do cartão da Uber**, na mesma tela. Em uma olhada, o motorista vê **Aceitar**, **Avaliar** ou **Recusar**, os indicadores disponíveis e o principal motivo. A primeira análise usa os dados disponíveis no aparelho para aparecer quase instantaneamente. O motorista usa os controles da própria oferta para decidir.
+O motorista configura o custo por quilômetro, as faixas de rendimento e as regiões que prefere evitar. Em **Preferências → Teste do cartão**, uma oferta de exemplo responde aos ajustes antes de salvar. Quando o Uber Driver exibe uma oferta no Android, um **cartão flutuante aparece automaticamente logo acima do cartão da Uber**, na mesma tela. Em uma olhada, o motorista vê **Aceitar**, **Avaliar** ou **Recusar** e os indicadores escolhidos. A primeira análise usa os dados disponíveis no aparelho para aparecer quase instantaneamente. O motorista usa os controles da própria oferta para decidir.
 
-> **Avaliar · R$ 32/h líquidos sem espera**  
-> A retirada costuma levar 15 min. Com essa espera, a estimativa cai para R$ 21/h líquidos.
+> **Avaliar**\
+> **R$ 1,44/km bruto · R$ 21,00/h líquido estimado**
 
 Exemplo ilustrativo de entrega. A interface distingue o que a oferta informou, o que foi estimado e o que ficou indisponível.
 
@@ -38,7 +38,7 @@ O motorista ou entregador define suas preferências, consulta a indicação e de
 | F02 | Calcular resultado financeiro | Motorista | Protótipo | F01 | Métricas e estimativas comparáveis |
 | F03 | Aplicar preferências de região | Motorista | Protótipo | F01 | Alertas ou vetos por embarque, coleta ou destino |
 | F04 | Usar avaliação e histórico operacional | Motorista e entregador | Protótipo → piloto | F01 | Nota disponível e estimativa de espera, quando sustentada |
-| F05 | Mostrar a análise em cartão flutuante acima da oferta | Motorista e entregador | Protótipo → piloto | F02, F03, F04 | Indicação com métricas e motivo para decidir na mesma tela |
+| F05 | Mostrar a análise em cartão flutuante acima da oferta | Motorista e entregador | Protótipo → piloto | F02, F03, F04 | Indicação compacta para decidir na mesma tela |
 | F06 | Avaliar casos ambíguos com Jebadiah | Motorista e equipe do piloto | Experimento | F05 | Segunda avaliação com opção de abstenção |
 | F07 | Comparar opções em sessões de validação | Equipe do piloto | Validação | F05 | Evidência para decidir quais sinais avançam |
 
@@ -64,7 +64,7 @@ O motorista ou entregador define suas preferências, consulta a indicação e de
 **História F03.1.** Como motorista, quero marcar bairros ou desenhar zonas e escolher se a regra vale para embarque, coleta ou destino.
 
 - O motorista pode configurar uma região para **alertar** ou **evitar**, com opção de faixa de horário. Uma zona vale somente para os pontos e horários configurados.
-- Uma zona obrigatória confirmada prevalece sobre a remuneração e sobre a sugestão do modelo. Exemplo de motivo exibido: “Destino em zona marcada para evitar”.
+- Uma zona obrigatória confirmada prevalece sobre a remuneração e sobre a sugestão do modelo. O cartão destaca o bairro afetado.
 - Se o ponto ou o endereço for insuficiente para conferir uma zona aplicável, a interface informa “Região não verificada”. Nesta situação, uma regra obrigatória pendente leva a **Avaliar**, a menos que outro critério já justifique **Recusar**.
 - A escolha de bairros pelo nome depende de cobertura de dados geográficos. O piloto compara a resolução por nome com zonas desenhadas no mapa.
 
@@ -72,7 +72,7 @@ O motorista ou entregador define suas preferências, consulta a indicação e de
 
 **História F04.1.** Como motorista, quero considerar a nota disponível na oferta de acordo com minha preferência.
 
-- O app mostra a nota, sua origem e o motivo quando ela fica abaixo de um limite configurado. O motorista pode configurar alerta ou recusa para esse critério.
+- Quando disponível, a nota pode aparecer como indicador. O motorista pode configurar alerta ou recusa para esse critério.
 - Nota ausente aparece como indisponível e não é tratada como nota baixa. O bairro, o nome ou o endereço não servem para inferir a reputação de uma pessoa.
 
 **História F04.2.** Como entregador, quero considerar a espera para retirar pedidos em determinada unidade.
@@ -85,7 +85,8 @@ O motorista ou entregador define suas preferências, consulta a indicação e de
 **História F05.1.** Como motorista, quero ver os resultados logo acima da oferta da Uber, assim que ela chegar, para decidir na mesma tela.
 
 - **Aceitar** quando os mínimos configurados forem atendidos, não houver veto e os critérios obrigatórios puderem ser verificados. **Avaliar** para alertas, dados essenciais incompletos ou resultados próximos do limite. **Recusar** quando uma regra obrigatória falhar ou a oferta ficar abaixo dos limites de recusa configurados. As faixas exatas serão calibradas no protótipo.
-- A indicação traz pelo menos um motivo verificável, como destino em zona evitada, rendimento abaixo da meta ou espera estimada na retirada. Cor acompanha texto legível.
+- O cartão mostra a decisão e até quatro indicadores disponíveis. Se houver veto por região, exibe o nome do bairro a evitar. A cor acompanha o texto e a análise mantém o motivo para validação.
+- O teste em Preferências usa a mesma decisão e o mesmo cartão. Permite ver o efeito das faixas e da aparência antes de salvar. A duração configurada termina, no máximo, junto com a oferta.
 - No piloto Android, o cartão compacto aparece automaticamente e imediatamente acima da borda superior da oferta da Uber, com um pequeno espaço entre os cartões. A tarifa, os detalhes e os controles da Uber permanecem visíveis e utilizáveis. O motorista pode dispensar a sobreposição.
 - Se a posição da oferta não puder ser identificada com segurança ou não houver espaço acima dela, não exibir o cartão sobre a oferta. Registrar o caso como falha de cobertura de posicionamento no piloto.
 - Exibir a primeira análise utilizável com a recomendação e as métricas disponíveis, sem esperar rede, Jebadiah ou o preenchimento de campos secundários. Meta inicial proposta: mediana de até **300 ms** e p95 de até **600 ms**, desde o primeiro quadro em que a oferta está visível até o primeiro quadro com os resultados legíveis. Um indicador de carregamento não conta como resultado.
@@ -96,7 +97,7 @@ O motorista ou entregador define suas preferências, consulta a indicação e de
 **História F06.1.** Como motorista, quero que o app considere casos em que os critérios apontam em direções diferentes.
 
 - Com os dados suficientes e uma oferta em aberto, o modelo recebe somente os sinais necessários e devolve uma escolha entre **aceitar**, **avaliar**, **recusar** ou **evidência insuficiente**. A decisão exibida continua respeitando os vetos e os requisitos de F05.
-- Se a saída for inválida, inconclusiva, atrasada ou indisponível, a indicação local continua disponível. A justificativa exibida usa fatos da oferta e motivos reconhecidos pelo app.
+- Se a saída for inválida, inconclusiva, atrasada ou indisponível, a indicação local continua disponível. A justificativa registrada usa fatos da oferta e motivos reconhecidos pelo app.
 - No piloto inicial, a avaliação do modelo roda em paralelo sem alterar o cartão. Ela só passa a influenciar a indicação após demonstrar ganho sobre as regras locais e respeitar o tempo da oferta.
 - O contrato tipado e o tratamento de abstenção seguem os padrões observados nos Spaces. A fila ZeroGPU serve como referência e opção para ensaios. Os Spaces estavam em repouso na inspeção e não há medida de latência para corridas em tempo real. [Mater Dei](https://huggingface.co/spaces/furlanhleo/materdei-audit-jebadiah) · [Talk2Me](https://huggingface.co/spaces/furlanhleo/talk2me-jebadiah-zerogpu) · [Choice](https://docs.typesafe.ai/primitives/choice)
 
@@ -112,7 +113,7 @@ O motorista ou entregador define suas preferências, consulta a indicação e de
 
 1. **F01 — ofertas reproduzíveis.** Definir os dados exibidos e desconhecidos com exemplos de corridas e de entregas. O mesmo formato serve aos avaliadores locais.
 2. **F02, F03 e F04 — sinais.** Depois de F01, calcular rendimento, aplicar preferências geográficas e representar nota e espera. F04 pode enriquecer F02 com espera, mas F02 calcula o cenário básico sozinho.
-3. **F05 — protótipo de decisão.** Combinar os três sinais num cartão com motivos e testar sua leitura acima de uma oferta reproduzida. No piloto Android, verificar posição, tempo e uso dos controles com ofertas reais quando F01 tiver cobertura suficiente.
+3. **F05 — protótipo de decisão.** Combinar os três sinais e testar a leitura do cartão compacto acima de uma oferta reproduzida. No piloto Android, verificar posição, tempo e uso dos controles com ofertas reais quando F01 tiver cobertura suficiente.
 4. **F06 e F07 — comparação.** F07 pode avaliar A e B enquanto F06 é preparado. A comparação com C começa quando houver resultados do modelo sobre os mesmos cenários.
 
 ## Plano de validação e critérios para avançar

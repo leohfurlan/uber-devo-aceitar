@@ -1,6 +1,6 @@
 # Devo aceitar?
 
-Protótipo Android do recomendador de corridas e entregas. A tela **Simulador de ofertas** reproduz cinco cenários e mostra a análise acima do cartão da oferta simulada. Em **Preferências**, escolha a fonte de energia e informe preço e consumo na unidade correspondente. O app divide o preço pelo rendimento e soma outros custos por km, quando informados. O custo direto por km continua disponível, assim como os ajustes de metas, nota de alerta e bairro a evitar.
+Protótipo Android do recomendador de corridas e entregas. As **Preferências** têm abas de **Metas**, **Veículo** e **Cartão**. Use **Teste** para ver como os ajustes afetam uma oferta de exemplo. Em **Veículo → Calculadora de lucro**, projete ganhos e custos por dia, semana e mês. **Aplicar metas** atualiza o rascunho de preferências e **Salvar** confirma a configuração.
 
 ## Build local
 
@@ -10,10 +10,15 @@ Use JDK 17 e Android SDK 35. Configure `ANDROID_HOME` para o SDK ou indique o ca
 
 1. Compile com `gradlew.bat :app:assembleDebug :lab:assembleDebug` no Windows ou `./gradlew :app:assembleDebug :lab:assembleDebug` em outro sistema. O segundo APK fica em `lab/build/outputs/apk/debug/lab-debug.apk`.
 2. Instale ambos os APKs. Em **Configurações → Acessibilidade**, ative **Devo Aceitar? · modo laboratório**.
-3. Abra **Laboratório de ofertas** e escolha um cenário. A análise deve aparecer acima da oferta com uma pequena folga. Verifique se ela acompanha a troca de oferta e some ao aceitar, recusar, expirar ou sair do laboratório.
+3. Abra **Laboratório de ofertas → Cenários → Entrega exclusiva** para reproduzir a oferta de R$ 39,34, 53 min e 27,4 km. A análise deve aparecer logo acima do cartão. Verifique se some ao aceitar, recusar, expirar ou sair do laboratório.
+4. Toque em **Ficar online** para receber a primeira oferta sintética após 10 segundos. Cada oferta automática fica disponível por 8 segundos. A próxima começa a ser agendada depois de recusar, expirar ou encerrar a viagem em andamento.
+5. Ao aceitar, use **Concluir simulação** para lançar o valor em **Ganhos**. Use **Cancelar simulação** para encerrar sem lançamento. Em **Mapa**, mova ou amplie o mapa esquemático por gestos.
+6. Em **Cenários → Entrega em lote**, aceite a oferta e pause a primeira coleta. Marque a próxima como coletada, retome a primeira e conclua as duas coletas para liberar **Concluir simulação**. [Referência do fluxo de coleta](https://github.com/viks11021/uberEats-with-pause-feature/blob/main/PickupScreen.js)
 
 O serviço de depuração identifica a janela do laboratório, lê os campos disponíveis da oferta na árvore de acessibilidade e calcula os resultados no aparelho. A janela da análise não recebe toques. O serviço está disponível apenas no build de depuração.
 
-Para testar preferências e análises simuladas em um único app, compile `gradlew.bat :app:assembleSimulator`. O APK em `app/build/outputs/apk/simulator/app-simulator.apk` é identificado como **Devo aceitar? Simulador** e inclui somente a análise dentro do próprio app, sem serviço de acessibilidade.
+Em **Histórico de análises**, consulte as ofertas avaliadas pelo serviço do Laboratório, inclusive aquelas que expiraram ou não tiveram espaço para a sobreposição. Cada análise guarda a oferta, os parâmetros e o resultado no aparelho. Se os trechos estão disponíveis, o custo total inclui a ida até a coleta ou o embarque e o percurso até o destino. **Reavaliar com as preferências atuais** cria um novo registro vinculado ao original.
+
+Use **Preferências → Teste** para visualizar o cartão enquanto ajusta as regras. A prévia de configuração não entra no histórico. O build `:app:assembleSimulator` oferece essa mesma prévia em um APK sem serviço de acessibilidade.
 
 A regra de bairro compara o nome do destino com uma preferência local. A espera da coleta vem do cenário sintético. A leitura de ofertas do Uber Driver, as zonas no mapa, o histórico real de coleta e a avaliação pelo Jebadiah pertencem às próximas etapas. [PRD](docs/PRD.md) · [Specs](docs/features/README.md)
