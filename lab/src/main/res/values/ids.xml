@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="lab_surface" />
+    <item type="id" name="lab_offer" />
+    <item type="id" name="offer_kind" />
+    <item type="id" name="offer_amount" />
+    <item type="id" name="offer_distance" />
+    <item type="id" name="offer_duration" />
+    <item type="id" name="offer_destination" />
+    <item type="id" name="offer_rating" />
+    <item type="id" name="offer_wait" />
+    <item type="id" name="accept_offer" />
+    <item type="id" name="decline_offer" />
+</resources>

@@ -1,0 +1,12 @@
+.gradle/
+.kotlin/
+**/build/
+.idea/
+local.properties
+/.codex-attachments/
+/output/
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
